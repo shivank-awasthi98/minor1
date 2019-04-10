@@ -143,12 +143,12 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
                 
                     <?php 
                            
-                            $query="SELECT * FROM users LIMIT 3;";
+                            $query="SELECT * FROM users ORDER BY (id) DESC LIMIT 3;";
                             $result=mysqli_query($link,$query);
                            $sno=0; while($row=mysqli_fetch_assoc($result)){$sno=$sno+1;
                                 echo("<tr>
                     <th scope="."row".">".$sno."</th>
-                    <td>".$row['firstname']." ".$row['lastname']."</td>
+                    <td><a href='resume.php?id=".$row['uid']."'>".$row['firstname']." ".$row['lastname']."</a></td>
                     <td>".$row['username']."</td>
                     <td><button class='btn btn-light'>Message</button></td>
                 </tr>");
@@ -169,8 +169,9 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
            
     
         </div>    
+
    
-       
+
     </body>
     
 </html>

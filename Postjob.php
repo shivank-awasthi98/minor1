@@ -1,7 +1,11 @@
 <?php 
 session_start();
 
-$error = "";    
+$error = "";
+if(!array_key_exists('id',$_SESSION))
+{
+    header('location:login.php');
+}
 if (array_key_exists("submit", $_POST)) {
     $link = mysqli_connect("localhost", "root", "", "clg_minor");
     if (mysqli_connect_error()) {

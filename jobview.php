@@ -7,7 +7,7 @@ if(!array_key_exists('id',$_SESSION))
 $link = mysqli_connect("localhost", "root", "", "clg_minor");
 ?>
 
-<html>
+<html class="w-100 h-100">
     <head>
         <title>SignedUp</title>
          <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
@@ -98,8 +98,7 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
             }
             .form-control-range{
                 width:340px;
-                position: relative;
-                left:500px;
+                
             }
             #textInput{
                 position: relative;
@@ -113,7 +112,7 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
     <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow">
             <div class="container">
-                <a class="navbar-brand text-warning " href="#">
+                <a class="navbar-brand text-warning " href="redirect.php">
                     <h4>ParTimers</h4>
                 
                 </a>
@@ -188,33 +187,105 @@ if (isset($_GET['id'])) {
                     
     
                     if(!($row3['typeofuser']=='employer')){ ?>
-                  <form class='form-inline ' method="post" action=bid.php>
-                      <?php if($row['budget']=='basic'){?>
-                      <input type="range" name="rangeInput" min="800" max="1500" class='form-control-range' onchange="updateTextInput(this.value);">
-                      <?php }
-                        else{?>
-                      <input type="range" name="rangeInput" min="Rs1500" max="Rs5000" class='form-control-range' onchange="updateTextInput(this.value);">
-                      <?php } ?>
+                 
+                      <?php 
+                        $query5="SELECT * FROM bids WHERE bidby=".$_SESSION['id']." AND bidon=".$row['id']."";
+                        
+                        $result5= mysqli_query($link,$query5);
+                        $num3=0;
+                        $num3= mysqli_num_rows($result5);           
+                        if($num3>0){
+                            $query6="SELECT * FROM hire WHERE hired=".$_SESSION['id']." AND hiredfor=".$row['id']."";
+                            
+                                $result6=mysqli_query($link,$query6);
+                                $row6=mysqli_fetch_assoc($result6);
+                               
+                                
+                            
+                        if($row6['Id']>0){  $query9="SELECT * FROM finishedjobs WHERE finishedjob=".$_GET['id']." " ;
+                            
+                             $result9=mysqli_query($link,$query9);
+                                          if (mysqli_num_rows($result9)>0){ ?><div class='container mt-4'> <div class='card text-dark bg-white border border-warning mb-3 mx-auto'>
+  
+                                    <div class='card-body'>
+                                    <h5 class='card-title'>Job Completed</h5>
+                                    <p class='card-text'>Please wait as your payment arrives</p>
+                                  </div>
+                                </div> </div> <?php } else{ ?> <a href="finishjob.php?id=<?php echo $row6['Id'] ?>" class="btn btn-warning mx-auto">Finish Job</a><?php }}
+                        else { ?>
+                      <button class="btn btn-warning mx-auto pr-3 disabled" type="submit" disabled>Bid</button>
+                      <?php 
+                        }
+                        }
+                    else
+                    {?> <form class='form-inline ' method="post" action=bid.php>
                       
-                  <input type="text" id="textInput" class='form-control-plaintext' value="Rs" readonly>
+                      
+                  
                 <input type="hidden" name='bidon' value="<?php echo $row['id']; ?>">
                 <input type="hidden" name='bidby' value="<?php echo $_SESSION['id']; ?>">
-                    <button class="btn btn-warning" type="submit">Bid</button>
+                      <?php if($row['budget']=='basic'){?>
+                      <input type="range" name="rangeInput" min="800" max="1500" class='form-control-range mx-auto' onchange="updateTextInput(this.value);">
+                      <?php }
+                        else{?>
+                  
+                      <input type="range" name="rangeInput" min="1500" max="5000" class='form-control-range mx-auto' onchange="updateTextInput(this.value);">
+                      <?php } ?>
+                      <input type="text" id="textInput" class='form-control-plaintext mx-auto' value="Rs" readonly>
+                    <button class="btn btn-warning mx-auto pr-3" type="submit" >Bid</button>
+                      <?php }?>
                   </form>
                  
               </div>
               <div class="card-footer bg-white text-warning">
-                <?php $query1="COUNT('id') FROM bids WHERE bidon=".$row['id'].";";
+                <?php $query1="SELECT  id  FROM bids WHERE bidon=".$row['id'].";";
                     $result1=mysqli_query($link,$query1);
-                    echo($result1);?>
+                    if(mysqli_num_rows($result1)>0){$num=mysqli_num_rows($result1);}
+                    else
+                    {$num=0;}
+                    echo("<p class='badge badge-warning text-wrap pl-3 pr-2'>".$num."</p>");?>
               </div>
         </div>
         <?php }
         else 
-                     {      echo"</div></div>";
+                     { 
+                        $query7="SELECT * FROM hire WHERE hiredfor = ".$_GET['id']." " ;
+                        
+                        $result7=mysqli_query($link,$query7);
+                         
+                       
+                        if(mysqli_num_rows($result7)>0)
+                        {   $query9="SELECT * FROM finishedjobs WHERE finishedjob=".$_GET['id']." " ;
+                            
+                             $result9=mysqli_query($link,$query9);
+                         if (mysqli_num_rows($result9)>0)
+                        {
+                            echo"</div><a href class='btn btn-warning mx-auto'>Pay</a></div>";
+                        }
+                          else{  $row7=mysqli_fetch_assoc($result7);
+                            $query8="SELECT username FROM users WHERE uid=".$row7['hired']." ";
+                            $result8=mysqli_query($link,$query8);
+                            $row8=mysqli_fetch_assoc($result8);
+                            echo"</div></div>";
+                            echo"<div class='container mt-4'> <div class='card text-dark bg-white border border-warning mb-3 mx-auto'>
+  
+                                    <div class='card-body'>
+                                    <h5 class='card-title'>Hired ".$row8['username']."</h5>
+                                    <p class='card-text'>Sit back and relax as our parttimer works hard on your project</p>
+                                  </div>
+                                </div> </div>";}
+
+                            
+                        }
+                       
+                       
+                       
+                            
+                        else{
+                            echo"</div></div>";
                             $query2="SELECT * FROM bids WHERE bidon=".$row['id']."";
                             $result1= mysqli_query($link,$query2);
-                            echo(" <div class='mt-4'><table class='table'>
+                            echo(" </div></div><div class='mt-4'><table class='table'>
                                 <thead class='thead-dark'>
                                 <tr>
                                 <th scope='col'>#</th>
@@ -225,18 +296,19 @@ if (isset($_GET['id'])) {
                                 </thead>
                                 <tbody>");
                             $sno=0;
-                            while($row=mysqli_fetch_assoc($result1)){
+                            while($row3=mysqli_fetch_assoc($result1)){
                                 $sno=$sno+1;
                                 
                             echo("<tr>
                                 <th scope="."row".">".$sno."</th>
-                                <td>".$row['bidby']."</a> </td>
-                                <td>Rs.".$row['bidammount']."</td>
-                                <td><button class='btn btn-warning'>Hire</button></td>
+                                <td>".$row3['biddername']."</a> </td>
+                                <td>Rs.".$row3['bidammount']."</td>
+                                <td><a href='hire.php?id=".$row3['Id']."' class='btn btn-warning'>Hire</a></td>
                                 </tr>");
                             }
                             echo("</tbody></table></div>");
-                     }?>
+                     }
+        }?>
        <footer class="footer bg-dark">
       <div class="container bg-dark">
         <span class="text-muted"></span>

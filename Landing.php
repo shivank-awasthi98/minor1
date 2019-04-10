@@ -200,10 +200,11 @@
     </div>
     </div>
     <!-- square -->
-    <div class='bg-white border-white'>
+    <div class='bg-white border-white  '>
     <div class="container " id="PopularJobs">
          <h2 style='font-weight: normal;'>Few of our popular jobs</h2>
       <div class="row">
+
           <?php 
                            $link = mysqli_connect("localhost", "root", "", "clg_minor");
                             $query="SELECT * FROM jobs ORDER BY id DESC LIMIT 3 ;";

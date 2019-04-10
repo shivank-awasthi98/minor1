@@ -5,6 +5,7 @@ if(!array_key_exists('id',$_SESSION))
     header("location:landing.php");
 }
 $link = mysqli_connect("localhost", "root", "", "clg_minor");
+
         
 ?>
 <html>
@@ -78,7 +79,7 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
     <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow">
             <div class="container">
-                <a class="navbar-brand text-warning " href="#">
+                <a class="navbar-brand text-warning " href="redirect.php">
                     <h4>ParTimers</h4>
                 
                 </a>
@@ -104,15 +105,15 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
                           
                               
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="viewskill.php">View my resume</a>
-                                <a class="dropdown-item" href="#"data-toggle="modal" data-target="#exampleModal">Add new skill</a>
+                                <?php echo('<a class="dropdown-item" href="resume.php?id='.($_SESSION['id']).'">View my resume</a>');?>
+                                <a class="dropdown-item" href="#"data-toggle="modal" data-target="#skillmodal">Add new skill</a>
                                
                               </div>
                             </div>
                       </li>
 
                       <li class="nav-item">
-                        <a class="nav-link " href="#"  >Messages</a>
+                        <a class="nav-link " href="#" data-toggle="modal" data-target="#messagemodal"  >Messages</a>
                       </li>
                         
                       
@@ -146,7 +147,7 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
                       <th scope="col">#</th>
                       <th scope="col">Job Title</th>
                       <th scope="col">Category</th>
-                      <th scope="col">Bid</th>
+                      <th scope="col">Total Bids</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -156,11 +157,22 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
                             $query="SELECT * FROM jobs ORDER BY id DESC LIMIT 3;";
                             $result=mysqli_query($link,$query);
                            $sno=0; while($row=mysqli_fetch_assoc($result)){$sno=$sno+1;
+                                $query1="SELECT bidon FROM bids WHERE bidon=".$row['id'].";";
+                               
+                            $result1=mysqli_query($link,$query1);
+                             if(mysqli_num_rows($result1)>0)   {$row1=mysqli_num_rows($result1);   
+                                                               }
+                            else
+                            { $row1=0;}
+                            
+                                                                          
+                                                                           
+                                                                           
                                 echo("<tr>
                     <th scope="."row".">".$sno."</th>
                     <td><a href='jobview.php?id=".$row['id']."'class='text-dark text-decoration-none'>".$row['jobtitle']."</a> </td>
                     <td>".$row['category']."</td>
-                    <td><button class='btn btn-light'>Bid</button></td>
+                    <td><p class='badge badge-warning text-wrap pl-4 pr-2' >".$row1."</p></td>
                 </tr>");
                             
                             }
@@ -176,30 +188,82 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
            
     
         </div>    
-   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal fade" id="skillmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
+      
     <div class="modal-content">
+        <form action=indexofparttimer.php method="post">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          
+        <h5 class="modal-title" id="exampleModalLabel">New Skills</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form action=indexofparttimer.php method="post">
+        
           
-              <div ><label class='ms-auto'>What is your new skill</label></div>
+              <div ><label class='mx-auto'>What is your new skill ?</label></div>
                 <div class='mx-auto'><input class='form-control' type=text name="newskill"></div>
-          </form>
+          
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-warning">Save changes</button>
+        
+        <button  class="btn btn-warning" type="submit" value="submit" name='submit' data-dismiss="modal">Save changes</button>
       </div>
-    </div>
+          </form>
   </div>
 </div>
-       
+        </div>
+    <div class="modal fade" id="messagemodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      
+    <div class="modal-content">
+        <form action=indexofparttimer.php method="post">
+      <div class="modal-header">
+          
+        <h5 class="modal-title" id="exampleModalLabel">New Skills</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+            <div ><label class='mx-auto'>What is your new skill type ?</label></div>
+                <div class='mx-auto'><select class='form-control' id="newskilltype"><option value="frontend">Frontend</option>
+                                                                <option value="backend">Backend</option>
+                                                                <option value="otherskill">Other</option></select></div>
+              <div ><label class='mx-auto'>What is your new skill ?</label></div>
+                <div class='mx-auto'><input class='form-control' type=text name="newskill" id="newskill1"></div>
+          
+      </div>
+      <div class="modal-footer">
+        
+        <button  class="btn btn-warning"  name='submit' data-dismiss="modal" onclick="addskill()">Save changes</button>
+      </div>
+          </form>
+  </div>
+</div>
+        </div>
+       <script>
+        function addskill(){
+          var skilltype=$("#newskilltype").val();
+        var skillname=$("#newskill1").val();
+            alert(skilltype);
+            <?php
+            $skilltype='skilltype';
+            $skillname ='skillname';
+
+            $query34="UPDATE parttimerinfo SET frontendskills="
+            
+
+            
+            ?>  }
+        
+        
+           
+        
+        </script>
     </body>
     
 </html>

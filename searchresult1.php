@@ -111,19 +111,14 @@ $link = mysqli_connect("localhost", "root", "", "clg_minor");
 
 if($_REQUEST['typeofuser']=='parttimer'){
     $query="SELECT * FROM jobs WHERE jobtitle='".$_REQUEST['keyword']."' OR category='".$_REQUEST['keyword']."' OR subcategory='".$_REQUEST['keyword']."' OR skills='".$_REQUEST['keyword']."';";
-    
-}
-else {
-    $query="SELECT * FROM users WHERE typeofuser=parttimer AND username=".$_REQUEST['keyword'].";";
-}
-        $result=mysqli_query($link,$query);
+    $result=mysqli_query($link,$query);
         while($row=mysqli_fetch_assoc($result)){
-            echo('<div class="card">
+            echo('<div class="card mt-3 mb-3">
   <div class="card-header">
     
   </div>
   <div class="card-body">
-    <h5 class="card-title">'.$row["jobtitle"].'</h5>
+    <h5><a href="jobview.php?id='.$row["id"].'" class="card-title text-decoration-none">'.$row["jobtitle"].'</a></h5>
     <p class="card-text">'.$row["jobdiscription"].'.</p>
     <p href="#" class="btn btn-warning text-white">'.$row["category"].'</p>
   </div>
@@ -131,9 +126,31 @@ else {
     
   </div></div>');
         }
-        ?>
- 
         
+}
+else {
+    $query="SELECT * FROM users WHERE typeofuser=parttimer AND username=".$_REQUEST['keyword'].";";
+    $result=mysqli_query($link,$query);
+        while($row=mysqli_fetch_assoc($result)){
+            echo('<div class="card mt-3 mb-3">
+  <div class="card-header">
+    
+  </div>
+  <div class="card-body">
+    <h5><a href="resume.php?id='.$row["id"].'" class="card-title text-decoration-none">'.$row["jobtitle"].'</a></h5>
+    <p class="card-text">'.$row["jobdiscription"].'.</p>
+    <p href="#" class="btn btn-warning text-white">'.$row["category"].'</p>
+  </div>
+    <div class="card-footer">
+    
+  </div></div>');
+        
+        }
+}        ?>
+
+        
+ 
+ 
 
 <footer class="footer bg-dark">
       <div class="container bg-dark">
